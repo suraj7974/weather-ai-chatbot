@@ -1,10 +1,9 @@
-// Chat routes - TODO: Implement
+// Chat routes
 import { Router, type Router as RouterType } from 'express';
+import { handleChat } from '../controllers/chat.controller.js';
 
 const router: RouterType = Router();
 
-router.post('/', (req, res) => {
-  res.json({ response: 'Chat endpoint - TODO' });
-});
+router.post('/', handleChat);
 
 export default router;

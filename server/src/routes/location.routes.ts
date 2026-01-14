@@ -1,14 +1,10 @@
-// Location routes - TODO: Implement
+// Location routes
 import { Router, type Router as RouterType } from 'express';
+import { searchLocation, reverseLocation } from '../controllers/location.controller.js';
 
 const router: RouterType = Router();
 
-router.get('/search', (req, res) => {
-  res.json({ message: 'Location search - TODO' });
-});
-
-router.get('/reverse', (req, res) => {
-  res.json({ message: 'Reverse geocode - TODO' });
-});
+router.get('/search', searchLocation);
+router.get('/reverse', reverseLocation);
 
 export default router;

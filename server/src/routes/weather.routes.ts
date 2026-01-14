@@ -1,18 +1,11 @@
-// Weather routes - TODO: Implement
+// Weather routes
 import { Router, type Router as RouterType } from 'express';
+import { getWeather, getWeatherCity, getWeatherForecast } from '../controllers/weather.controller.js';
 
 const router: RouterType = Router();
 
-router.get('/', (req, res) => {
-  res.json({ message: 'Weather endpoint - TODO' });
-});
-
-router.get('/city', (req, res) => {
-  res.json({ message: 'Weather by city - TODO' });
-});
-
-router.get('/forecast', (req, res) => {
-  res.json({ message: 'Forecast endpoint - TODO' });
-});
+router.get('/', getWeather);
+router.get('/city', getWeatherCity);
+router.get('/forecast', getWeatherForecast);
 
 export default router;
