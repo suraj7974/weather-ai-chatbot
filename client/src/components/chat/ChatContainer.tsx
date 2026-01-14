@@ -42,11 +42,17 @@ export function ChatContainer() {
 
   // Send voice transcript - only when user clicks Send button
   const handleVoiceSend = () => {
-    const textToSend = (transcript + interimTranscript).trim();
+    const textToSend = (transcript + ' ' + interimTranscript).trim();
     if (textToSend) {
       sendMessage(textToSend);
       resetTranscript();
     }
+  };
+
+  // Retry voice input - reset and start again
+  const handleVoiceRetry = () => {
+    resetTranscript();
+    startListening();
   };
 
   // Check if we should show the recording indicator
@@ -70,6 +76,7 @@ export function ChatContainer() {
             error={error}
             onCancel={handleVoiceCancel}
             onSend={handleVoiceSend}
+            onRetry={handleVoiceRetry}
           />
         </div>
       )}
