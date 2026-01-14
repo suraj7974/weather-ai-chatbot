@@ -1,7 +1,9 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import type { ChatMessage, LocationData, WeatherData } from '../types';
 import { chatApi, weatherApi } from '../services/api';
 import { useLanguage } from './LanguageContext';
+import { useSession } from './SessionContext';
+import { generateId } from '../utils/storage';
 
 interface ChatContextType {
   messages: ChatMessage[];
@@ -17,41 +19,36 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
-
 export function ChatProvider({ children }: { children: ReactNode }) {
   const { language, t } = useLanguage();
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    {
-      id: generateId(),
-      role: 'assistant',
-      content: t('chat.welcome'),
-      timestamp: Date.now(),
-    },
-  ]);
+  const { activeSession, addMessage, updateSessionLocation, createSession } = useSession();
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [location, setLocationState] = useState<LocationData | null>(null);
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
-  const setLocation = useCallback(async (newLocation: LocationData | null) => {
-    setLocationState(newLocation);
-    if (newLocation) {
-      try {
-        const weatherData = await weatherApi.getByCoordinates(
-          newLocation.lat,
-          newLocation.lon
-        );
-        setWeather(weatherData);
-      } catch (err) {
-        console.error('Failed to fetch weather:', err);
-      }
+  // Get messages and location from active session
+  const messages = activeSession?.messages || [];
+  const location = activeSession?.location || null;
+
+  // Fetch weather when location changes
+  useEffect(() => {
+    if (location) {
+      weatherApi
+        .getByCoordinates(location.lat, location.lon)
+        .then(setWeather)
+        .catch((err) => console.error('Failed to fetch weather:', err));
     } else {
       setWeather(null);
     }
-  }, []);
+  }, [location]);
+
+  const setLocation = useCallback(
+    (newLocation: LocationData | null) => {
+      updateSessionLocation(newLocation);
+    },
+    [updateSessionLocation]
+  );
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -64,7 +61,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         timestamp: Date.now(),
       };
 
-      setMessages((prev) => [...prev, userMessage]);
+      // Add user message to session
+      addMessage(userMessage);
       setIsLoading(true);
       setError(null);
 
@@ -88,7 +86,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           timestamp: Date.now(),
         };
 
-        setMessages((prev) => [...prev, assistantMessage]);
+        // Add assistant message to session
+        addMessage(assistantMessage);
 
         // Update weather if returned
         if (response.weather) {
@@ -105,25 +104,20 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           content: `Sorry, I encountered an error: ${errorMessage}`,
           timestamp: Date.now(),
         };
-        setMessages((prev) => [...prev, errorChatMessage]);
+        addMessage(errorChatMessage);
       } finally {
         setIsLoading(false);
       }
     },
-    [messages, location, language, t]
+    [messages, location, language, t, addMessage]
   );
 
   const clearChat = useCallback(() => {
-    setMessages([
-      {
-        id: generateId(),
-        role: 'assistant',
-        content: t('chat.welcome'),
-        timestamp: Date.now(),
-      },
-    ]);
+    // Create a new session instead of clearing messages
+    createSession();
     setError(null);
-  }, [t]);
+    setWeather(null);
+  }, [createSession]);
 
   const clearError = useCallback(() => {
     setError(null);

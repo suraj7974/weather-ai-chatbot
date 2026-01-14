@@ -38,6 +38,10 @@ const translations: Record<Language, Record<string, string>> = {
     'voice.start': 'Start voice input',
     'voice.stop': 'Stop listening',
     'voice.notSupported': 'Voice input not supported',
+    'chat.newChat': 'New Chat',
+    'chat.sessions': 'Chat History',
+    'chat.deleteSession': 'Delete chat',
+    'chat.clearAll': 'Clear all chats',
   },
   ja: {
     'app.title': '天気旅行アシスタント',
@@ -63,6 +67,10 @@ const translations: Record<Language, Record<string, string>> = {
     'voice.start': '音声入力を開始',
     'voice.stop': '聞き取りを停止',
     'voice.notSupported': '音声入力はサポートされていません',
+    'chat.newChat': '新しいチャット',
+    'chat.sessions': 'チャット履歴',
+    'chat.deleteSession': 'チャットを削除',
+    'chat.clearAll': 'すべてのチャットを削除',
   },
 };
 
