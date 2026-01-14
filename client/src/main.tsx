@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider, LanguageProvider, ChatProvider } from './context';
+import { ThemeProvider, LanguageProvider, SessionProvider, ChatProvider } from './context';
 import './index.css';
 import App from './App';
 
@@ -8,9 +8,11 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
       <LanguageProvider>
-        <ChatProvider>
-          <App />
-        </ChatProvider>
+        <SessionProvider>
+          <ChatProvider>
+            <App />
+          </ChatProvider>
+        </SessionProvider>
       </LanguageProvider>
     </ThemeProvider>
   </StrictMode>

@@ -53,6 +53,16 @@ export interface ChatResponse {
   weather?: WeatherData;
 }
 
+// Session types
+export interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  location: LocationData | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
 // Location types
 export interface LocationData {
   name: string;
