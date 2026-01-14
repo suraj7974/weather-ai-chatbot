@@ -1,32 +1,85 @@
-import { useTheme, useLanguage } from '../../context';
+import { useTheme, useLanguage, useSession } from '../../context';
 import { LanguageSelector } from '../voice';
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
+  const { toggleSidebar } = useSession();
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+    <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-4 py-3">
       <div className="flex items-center justify-between">
-        {/* Logo and title */}
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {t('app.title')}
-          </h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {t('app.subtitle')}
-          </p>
+        {/* Left section */}
+        <div className="flex items-center gap-3">
+          {/* Menu button */}
+          <button
+            onClick={toggleSidebar}
+            className="
+              lg:hidden
+              p-2 rounded-lg
+              hover:bg-zinc-100 dark:hover:bg-zinc-800
+              text-zinc-600 dark:text-zinc-400
+              transition-colors duration-150
+            "
+            title="Toggle sidebar"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+
+          {/* Logo and title */}
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-indigo-600">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                {t('app.title')}
+              </h1>
+              <p className="text-xs text-zinc-500 hidden sm:block">
+                {t('app.subtitle')}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2">
+        {/* Right section */}
+        <div className="flex items-center gap-1">
           {/* Language selector */}
           <LanguageSelector compact />
 
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            className="
+              p-2 rounded-lg
+              hover:bg-zinc-100 dark:hover:bg-zinc-800
+              text-zinc-600 dark:text-zinc-400
+              transition-colors duration-150
+            "
             title={theme === 'light' ? t('theme.dark') : t('theme.light')}
           >
             {theme === 'light' ? (
