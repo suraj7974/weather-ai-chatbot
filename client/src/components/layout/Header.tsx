@@ -1,8 +1,9 @@
 import { useTheme, useLanguage } from '../../context';
+import { LanguageSelector } from '../voice';
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
-  const { t, toggleLanguage, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
@@ -19,13 +20,8 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          {/* Language toggle */}
-          <button
-            onClick={toggleLanguage}
-            className="px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-          >
-            {language === 'en' ? '日本語' : 'English'}
-          </button>
+          {/* Language selector */}
+          <LanguageSelector compact />
 
           {/* Theme toggle */}
           <button
