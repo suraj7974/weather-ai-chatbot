@@ -14,7 +14,11 @@ export function VoiceButton({ isListening, isSupported, onClick, disabled = fals
     return (
       <button
         disabled
-        className="p-1.5 rounded-full text-gray-400 cursor-not-allowed"
+        className="
+          p-2.5 rounded-xl
+          bg-zinc-100 dark:bg-zinc-800
+          text-zinc-400 cursor-not-allowed
+        "
         title={t('voice.notSupported')}
       >
         <MicOffIcon />
@@ -27,10 +31,11 @@ export function VoiceButton({ isListening, isSupported, onClick, disabled = fals
       onClick={onClick}
       disabled={disabled}
       className={`
-        relative p-1.5 rounded-full transition-all duration-200
+        relative p-2.5 rounded-xl
+        transition-all duration-150
         ${isListening 
-          ? 'text-red-500 bg-red-100 dark:bg-red-900/30' 
-          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+          ? 'bg-rose-500 text-white' 
+          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
         }
         disabled:opacity-50 disabled:cursor-not-allowed
       `}
@@ -38,7 +43,7 @@ export function VoiceButton({ isListening, isSupported, onClick, disabled = fals
     >
       {/* Pulse animation when listening */}
       {isListening && (
-        <span className="absolute inset-0 rounded-full bg-red-200 dark:bg-red-800/40 animate-ping opacity-75" />
+        <span className="absolute inset-0 rounded-xl bg-rose-400 animate-ping opacity-40" />
       )}
       
       <span className="relative">
@@ -48,7 +53,6 @@ export function VoiceButton({ isListening, isSupported, onClick, disabled = fals
   );
 }
 
-// Microphone icon
 function MicIcon() {
   return (
     <svg
@@ -66,7 +70,6 @@ function MicIcon() {
   );
 }
 
-// Stop icon (square) - shown when recording
 function StopIcon() {
   return (
     <svg
@@ -80,7 +83,6 @@ function StopIcon() {
   );
 }
 
-// Microphone off icon
 function MicOffIcon() {
   return (
     <svg
