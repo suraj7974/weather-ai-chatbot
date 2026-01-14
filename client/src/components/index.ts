@@ -12,3 +12,6 @@ export { VoiceButton, LanguageSelector, RecordingIndicator, BrowserCompatibility
 
 // Layout components
 export { Header } from './layout';
+
+// Sidebar components
+export { Sidebar } from './sidebar';
