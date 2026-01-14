@@ -92,6 +92,7 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
   const [error, setError] = useState<string | null>(null);
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const finalTranscriptRef = useRef('');
 
   const { supported: isSupported, browser: browserName } = checkCompatibility();
 
@@ -108,48 +109,47 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
     if (!SpeechRecognitionAPI) return;
 
     const recognition = new SpeechRecognitionAPI();
-    recognition.continuous = true; // Keep listening until manually stopped
-    recognition.interimResults = true; // Get results while speaking
+    recognition.continuous = true;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     recognition.lang = getLanguageCode(language);
 
     recognition.onstart = () => {
       setIsListening(true);
       setError(null);
+      finalTranscriptRef.current = '';
     };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let interim = '';
-      let final = '';
+      let interimText = '';
+      let finalText = '';
 
-      // Process all results
+      // Loop through all results
       for (let i = 0; i < event.results.length; i++) {
         const result = event.results[i];
         const text = result[0].transcript;
         
         if (result.isFinal) {
-          final += text;
+          finalText += text + ' ';
         } else {
-          interim += text;
+          interimText += text;
         }
       }
 
-      // Update transcript with all final results
-      setTranscript(final);
-      setInterimTranscript(interim);
+      // Update refs and state
+      if (finalText) {
+        finalTranscriptRef.current = finalText.trim();
+        setTranscript(finalText.trim());
+      }
+      
+      // Always update interim - this shows what's being spoken in real-time
+      setInterimTranscript(interimText);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error('Speech recognition error:', event.error);
       
-      // Don't treat 'no-speech' as error, just stop listening
-      if (event.error === 'no-speech') {
-        setIsListening(false);
-        return;
-      }
-      
-      // Handle aborted gracefully
-      if (event.error === 'aborted') {
+      if (event.error === 'no-speech' || event.error === 'aborted') {
         setIsListening(false);
         return;
       }
@@ -160,8 +160,15 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
 
     recognition.onend = () => {
       setIsListening(false);
-      // Clear interim when stopped - keep only final transcript
-      setInterimTranscript('');
+      // Move any remaining interim to final transcript
+      setInterimTranscript(current => {
+        if (current) {
+          const combined = (finalTranscriptRef.current + ' ' + current).trim();
+          setTranscript(combined);
+          finalTranscriptRef.current = combined;
+        }
+        return '';
+      });
     };
 
     recognitionRef.current = recognition;
@@ -171,7 +178,7 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
         try {
           recognitionRef.current.abort();
         } catch {
-          // Ignore abort errors
+          // Ignore
         }
       }
     };
@@ -187,15 +194,15 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
   const startListening = useCallback(() => {
     if (!recognitionRef.current || isListening) return;
     
-    // Reset state
+    // Reset all state
     setTranscript('');
     setInterimTranscript('');
     setError(null);
+    finalTranscriptRef.current = '';
     
     try {
       recognitionRef.current.start();
     } catch (err) {
-      // Handle "already started" error
       if (err instanceof Error && err.message.includes('already started')) {
         return;
       }
@@ -211,7 +218,6 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
       recognitionRef.current.stop();
     } catch (err) {
       console.error('Failed to stop recognition:', err);
-      // Force state update
       setIsListening(false);
     }
   }, [isListening]);
@@ -219,6 +225,7 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
   const resetTranscript = useCallback(() => {
     setTranscript('');
     setInterimTranscript('');
+    finalTranscriptRef.current = '';
   }, []);
 
   return {
