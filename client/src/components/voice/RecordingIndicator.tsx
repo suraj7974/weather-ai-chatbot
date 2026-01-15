@@ -23,7 +23,7 @@ export function RecordingIndicator({
 
   if (error) {
     return (
-      <div className="bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900 overflow-hidden animate-fadeIn">
+      <div className="max-w-md mx-auto bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900 overflow-hidden animate-fadeIn">
         <div className="flex items-center gap-3 px-4 py-3">
           <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
@@ -56,7 +56,7 @@ export function RecordingIndicator({
   const hasContent = displayText.length > 0;
 
   return (
-    <div className="bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 overflow-hidden animate-fadeIn">
+    <div className="max-w-lg mx-auto bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 overflow-hidden animate-fadeIn">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-200 dark:border-neutral-800">
         <div className="flex items-center gap-2">
@@ -115,15 +115,9 @@ export function RecordingIndicator({
         </div>
       )}
 
-      {/* Actions */}
-      {!isListening && hasContent && (
+      {/* Actions - shown during listening AND after */}
+      {(isListening || hasContent) && (
         <div className="flex gap-2 px-4 py-3 border-t border-neutral-200 dark:border-neutral-800">
-          <button
-            onClick={onCancel}
-            className="px-3 py-1.5 text-sm rounded-md bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors"
-          >
-            {language === 'ja' ? 'キャンセル' : 'Cancel'}
-          </button>
           <button
             onClick={onRetry}
             className="px-3 py-1.5 text-sm rounded-md bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors flex items-center gap-1"
@@ -135,7 +129,8 @@ export function RecordingIndicator({
           </button>
           <button
             onClick={onSend}
-            className="flex-1 px-3 py-1.5 text-sm rounded-md bg-neutral-900 dark:bg-neutral-100 hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-900 transition-colors"
+            disabled={!hasContent}
+            className="flex-1 px-3 py-1.5 text-sm rounded-md bg-neutral-900 dark:bg-neutral-100 hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-900 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             {language === 'ja' ? '送信' : 'Send'}
           </button>

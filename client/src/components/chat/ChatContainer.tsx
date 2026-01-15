@@ -22,7 +22,9 @@ export function ChatContainer() {
 
   const handleVoiceClick = () => {
     if (isListening) {
+      // Stop button now closes the panel (same as cancel)
       stopListening();
+      resetTranscript();
     } else {
       startListening();
     }
@@ -41,6 +43,7 @@ export function ChatContainer() {
     const textToSend = (transcript + " " + interimTranscript).trim();
     if (textToSend) {
       sendMessage(textToSend);
+      stopListening();
       resetTranscript();
     }
   };
