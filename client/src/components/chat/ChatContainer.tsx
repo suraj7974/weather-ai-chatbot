@@ -25,28 +25,41 @@ export function ChatContainer() {
   } = useVoiceRecognition({ language });
 
   // Voice output (TTS)
-  const { speak, stop: stopSpeaking, isSpeaking, isSupported: ttsSupported } = useTextToSpeech({ language });
-  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(() => voiceOutputStorage.get());
-  const lastMessageCountRef = useRef(messages.length);
+  const {
+    speak,
+    stop: stopSpeaking,
+    isSpeaking,
+    isSupported: ttsSupported,
+  } = useTextToSpeech({ language });
+  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(() =>
+    voiceOutputStorage.get(),
+  );
+  const prevIsLoadingRef = useRef(isLoading);
   const lastMessageIdRef = useRef<string | null>(null);
 
   // Auto-speak new AI responses when voice output is enabled
   useEffect(() => {
-    if (!voiceOutputEnabled || !ttsSupported) return;
-    
-    // Only speak when loading is finished (message is complete)
-    // This prevents speaking partial messages during streaming
-    if (!isLoading && messages.length > 0) {
+    if (!voiceOutputEnabled || !ttsSupported) {
+      prevIsLoadingRef.current = isLoading;
+      return;
+    }
+
+    const justFinishedLoading = prevIsLoadingRef.current && !isLoading;
+
+    if (justFinishedLoading && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-      
-      // Only speak assistant messages that we haven't spoken yet
-      if (lastMessage && lastMessage.role === 'assistant' && lastMessage.id !== lastMessageIdRef.current) {
-        lastMessageIdRef.current = lastMessage.id;
-        speak(lastMessage.content);
+
+      // Only speak assistant messages
+      if (lastMessage && lastMessage.role === "assistant") {
+        if (lastMessage.id !== lastMessageIdRef.current) {
+          lastMessageIdRef.current = lastMessage.id;
+          speak(lastMessage.content);
+        }
       }
     }
-    
-    lastMessageCountRef.current = messages.length;
+
+    // Update ref for next render
+    prevIsLoadingRef.current = isLoading;
   }, [isLoading, messages, voiceOutputEnabled, ttsSupported, speak]);
 
   // Toggle voice output
@@ -54,7 +67,7 @@ export function ChatContainer() {
     const newValue = !voiceOutputEnabled;
     setVoiceOutputEnabled(newValue);
     voiceOutputStorage.set(newValue);
-    
+
     // If turning off while speaking, stop speaking
     if (!newValue && isSpeaking) {
       stopSpeaking();
