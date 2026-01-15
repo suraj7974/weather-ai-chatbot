@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   ACTIVE_SESSION: 'weather-chatbot-active',
   THEME: 'weather-chatbot-theme',
   LANGUAGE: 'weather-chatbot-language',
+  VOICE_OUTPUT: 'weather-chatbot-voice-output',
 } as const;
 
 // Generate unique ID
@@ -144,6 +145,26 @@ export const languageStorage = {
       localStorage.setItem(STORAGE_KEYS.LANGUAGE, language);
     } catch (error) {
       console.error('Failed to save language:', error);
+    }
+  },
+};
+
+// Voice output storage utilities
+export const voiceOutputStorage = {
+  get(): boolean {
+    try {
+      const value = localStorage.getItem(STORAGE_KEYS.VOICE_OUTPUT);
+      return value === 'true';
+    } catch {
+      return false;
+    }
+  },
+
+  set(enabled: boolean): void {
+    try {
+      localStorage.setItem(STORAGE_KEYS.VOICE_OUTPUT, String(enabled));
+    } catch (error) {
+      console.error('Failed to save voice output setting:', error);
     }
   },
 };

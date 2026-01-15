@@ -55,6 +55,9 @@ const translations: Record<Language, Record<string, string>> = {
     'voice.start': 'Start voice input',
     'voice.stop': 'Stop listening',
     'voice.notSupported': 'Voice input not supported',
+    'voice.outputOn': 'Voice output on',
+    'voice.outputOff': 'Voice output off',
+    'voice.stopSpeaking': 'Stop speaking',
   },
   ja: {
     'app.title': 'ウェザーチャットボット',
@@ -97,6 +100,9 @@ const translations: Record<Language, Record<string, string>> = {
     'voice.start': '音声入力を開始',
     'voice.stop': '聞き取りを停止',
     'voice.notSupported': '音声入力はサポートされていません',
+    'voice.outputOn': '音声出力オン',
+    'voice.outputOff': '音声出力オフ',
+    'voice.stopSpeaking': '読み上げを停止',
   },
 };
 

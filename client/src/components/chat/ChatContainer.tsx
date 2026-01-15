@@ -1,5 +1,7 @@
+import { useState, useEffect, useRef } from "react";
 import { useChat, useLanguage } from "../../context";
-import { useVoiceRecognition } from "../../hooks/useVoiceRecognition";
+import { useVoiceRecognition, useTextToSpeech } from "../../hooks";
+import { voiceOutputStorage } from "../../utils/storage";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
 import { RecordingIndicator, BrowserCompatibility } from "../voice";
@@ -8,6 +10,7 @@ export function ChatContainer() {
   const { messages, isLoading, sendMessage } = useChat();
   const { language } = useLanguage();
 
+  // Voice recognition (input)
   const {
     isListening,
     isSupported,
@@ -19,6 +22,42 @@ export function ChatContainer() {
     stopListening,
     resetTranscript,
   } = useVoiceRecognition({ language });
+
+  // Voice output (TTS)
+  const { speak, stop: stopSpeaking, isSpeaking, isSupported: ttsSupported } = useTextToSpeech({ language });
+  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(() => voiceOutputStorage.get());
+  const lastMessageCountRef = useRef(messages.length);
+  const lastMessageIdRef = useRef<string | null>(null);
+
+  // Auto-speak new AI responses when voice output is enabled
+  useEffect(() => {
+    if (!voiceOutputEnabled || !ttsSupported) return;
+    
+    // Check if we have a new message
+    if (messages.length > lastMessageCountRef.current) {
+      const lastMessage = messages[messages.length - 1];
+      
+      // Only speak assistant messages that we haven't spoken yet
+      if (lastMessage && lastMessage.role === 'assistant' && lastMessage.id !== lastMessageIdRef.current) {
+        lastMessageIdRef.current = lastMessage.id;
+        speak(lastMessage.content);
+      }
+    }
+    
+    lastMessageCountRef.current = messages.length;
+  }, [messages, voiceOutputEnabled, ttsSupported, speak]);
+
+  // Toggle voice output
+  const handleVoiceOutputToggle = () => {
+    const newValue = !voiceOutputEnabled;
+    setVoiceOutputEnabled(newValue);
+    voiceOutputStorage.set(newValue);
+    
+    // If turning off while speaking, stop speaking
+    if (!newValue && isSpeaking) {
+      stopSpeaking();
+    }
+  };
 
   const handleVoiceClick = () => {
     if (isListening) {
@@ -87,6 +126,12 @@ export function ChatContainer() {
         onVoiceClick={handleVoiceClick}
         isListening={isListening}
         voiceSupported={isSupported}
+        // Voice output props
+        voiceOutputEnabled={voiceOutputEnabled}
+        isSpeaking={isSpeaking}
+        voiceOutputSupported={ttsSupported}
+        onVoiceOutputToggle={handleVoiceOutputToggle}
+        onStopSpeaking={stopSpeaking}
       />
     </div>
   );

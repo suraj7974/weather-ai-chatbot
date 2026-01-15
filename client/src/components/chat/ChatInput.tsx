@@ -1,6 +1,6 @@
 import { useState, type KeyboardEvent, type ChangeEvent } from "react";
 import { useLanguage } from "../../context";
-import { VoiceButton } from "../voice";
+import { VoiceButton, VoiceOutputButton } from "../voice";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -8,6 +8,12 @@ interface ChatInputProps {
   onVoiceClick?: () => void;
   isListening?: boolean;
   voiceSupported?: boolean;
+  // Voice output props
+  voiceOutputEnabled?: boolean;
+  isSpeaking?: boolean;
+  voiceOutputSupported?: boolean;
+  onVoiceOutputToggle?: () => void;
+  onStopSpeaking?: () => void;
 }
 
 export function ChatInput({
@@ -16,6 +22,12 @@ export function ChatInput({
   onVoiceClick,
   isListening = false,
   voiceSupported = true,
+  // Voice output
+  voiceOutputEnabled = false,
+  isSpeaking = false,
+  voiceOutputSupported = true,
+  onVoiceOutputToggle,
+  onStopSpeaking,
 }: ChatInputProps) {
   const { t } = useLanguage();
   const [input, setInput] = useState("");
@@ -40,9 +52,18 @@ export function ChatInput({
 
   return (
     <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto flex items-center gap-3">
+        {/* Voice output button - LEFT, OUTSIDE the input container */}
+        <VoiceOutputButton
+          isEnabled={voiceOutputEnabled}
+          isSpeaking={isSpeaking}
+          isSupported={voiceOutputSupported}
+          onToggle={onVoiceOutputToggle || (() => {})}
+          onStop={onStopSpeaking || (() => {})}
+        />
+
         {/* Input container */}
-        <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-2 focus-within:border-neutral-400 dark:focus-within:border-neutral-600 transition-colors duration-150 shadow-sm">
+        <div className="flex-1 flex items-center gap-2 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-2 focus-within:border-neutral-400 dark:focus-within:border-neutral-600 transition-colors duration-150 shadow-sm">
           {/* Voice button */}
           <VoiceButton
             isListening={isListening}
