@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '../../context';
 
 interface VoiceOutputButtonProps {
@@ -16,16 +18,42 @@ export function VoiceOutputButton({
   onStop 
 }: VoiceOutputButtonProps) {
   const { t } = useLanguage();
+  const [showHint, setShowHint] = useState(false);
+
+  useEffect(() => {
+    let showTimer: NodeJS.Timeout;
+    let hideTimer: NodeJS.Timeout;
+
+    if (!isEnabled && isSupported) {
+      // Show hint after 1 second
+      showTimer = setTimeout(() => {
+        setShowHint(true);
+      }, 1000);
+
+      // Hide hint after 7 seconds (1s delay + 6s display)
+      hideTimer = setTimeout(() => {
+        setShowHint(false);
+      }, 7000);
+    } else {
+      setShowHint(false);
+    }
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, [isEnabled, isSupported]);
 
   if (!isSupported) {
     return (
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-row items-center gap-2 border border-neutral-300 dark:border-neutral-700 rounded-xl p-2">
         <button
           disabled
           className="
-            p-2.5 rounded-xl
+            p-2 rounded-lg
             bg-neutral-100 dark:bg-neutral-900
             text-neutral-400 cursor-not-allowed
+            hover:shadow-md hover:shadow-neutral-400/20 hover:scale-[1.03]
           "
           title={t('voice.notSupported')}
         >
@@ -39,6 +67,7 @@ export function VoiceOutputButton({
   }
 
   const handleClick = () => {
+    setShowHint(false);
     if (isSpeaking) {
       onStop();
     } else {
@@ -47,26 +76,45 @@ export function VoiceOutputButton({
   };
 
   return (
-    <div className="flex flex-col items-center gap-1">
-      <button
-        onClick={handleClick}
+    <button
+      onClick={handleClick}
+      className="group relative flex flex-row items-center gap-2 border border-neutral-300 dark:border-neutral-700 rounded-xl p-2 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+      title={
+        isSpeaking
+          ? t('voice.stopSpeaking')
+          : isEnabled
+            ? t('voice.outputOn')
+            : t('voice.outputOff')
+      }
+    >
+      <AnimatePresence>
+        {showHint && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
+            className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 whitespace-nowrap z-50 pointer-events-none"
+          >
+            <div className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-semibold py-1.5 px-3 rounded-lg shadow-xl">
+              {t('voice.turnOnHint')}
+              {/* Triangle arrow */}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-neutral-900 dark:border-t-neutral-100" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div
         className={`
-          relative p-2.5 rounded-xl
+          relative p-2 rounded-lg
           transition-all duration-200 ease-out
-          ${isEnabled 
+          ${isEnabled
             ? isSpeaking
-              ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg shadow-green-500/30 scale-105'
-              : 'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-md shadow-green-500/20 hover:shadow-lg hover:shadow-green-500/30 hover:scale-105'
-            : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-300 dark:hover:bg-neutral-700 hover:scale-105'
+              ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-xl shadow-green-500/40 scale-100 rounded-lg'
+              : 'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-md shadow-green-500/20 group-hover:shadow-xl group-hover:shadow-green-500/40 group-hover:scale-[1.03] rounded-lg'
+            : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 group-hover:bg-neutral-300 dark:group-hover:bg-neutral-700 group-hover:shadow-md group-hover:shadow-neutral-400/20 group-hover:scale-[1.03] rounded-lg'
           }
         `}
-        title={
-          isSpeaking 
-            ? t('voice.stopSpeaking') 
-            : isEnabled 
-              ? t('voice.outputOn') 
-              : t('voice.outputOff')
-        }
       >
         {/* Animated rings when speaking */}
         {isSpeaking && (
@@ -84,7 +132,7 @@ export function VoiceOutputButton({
         <span className="relative flex items-center justify-center">
           {isSpeaking ? <SpeakingIcon /> : isEnabled ? <SpeakerOnIcon /> : <SpeakerOffIcon />}
         </span>
-      </button>
+      </div>
       
       {/* Status indicator */}
       <div className={`
@@ -118,10 +166,10 @@ export function VoiceOutputButton({
             : 'text-neutral-500 dark:text-neutral-400'
           }
         `}>
-          {isSpeaking ? 'Live' : isEnabled ? 'On' : 'Off'}
+          {isSpeaking ? t('voice.statusLive') : isEnabled ? t('voice.statusOn') : t('voice.statusOff')}
         </span>
       </div>
-    </div>
+    </button>
   );
 }
 

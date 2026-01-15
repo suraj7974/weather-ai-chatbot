@@ -58,6 +58,11 @@ const translations: Record<Language, Record<string, string>> = {
     'voice.outputOn': 'Voice output on',
     'voice.outputOff': 'Voice output off',
     'voice.stopSpeaking': 'Stop speaking',
+    'voice.label': 'Voice',
+    'voice.turnOnHint': 'Turn on for voice output',
+    'voice.statusOn': 'On',
+    'voice.statusOff': 'Off',
+    'voice.statusLive': 'Live',
   },
   ja: {
     'app.title': 'ウェザーチャットボット',
@@ -103,6 +108,11 @@ const translations: Record<Language, Record<string, string>> = {
     'voice.outputOn': '音声出力オン',
     'voice.outputOff': '音声出力オフ',
     'voice.stopSpeaking': '読み上げを停止',
+    'voice.label': '音声',
+    'voice.turnOnHint': '音声出力をオンにする',
+    'voice.statusOn': 'オン',
+    'voice.statusOff': 'オフ',
+    'voice.statusLive': 'ライブ',
   },
 };
 
