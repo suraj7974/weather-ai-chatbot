@@ -21,8 +21,8 @@ export function VoiceOutputButton({
   const [showHint, setShowHint] = useState(false);
 
   useEffect(() => {
-    let showTimer: NodeJS.Timeout;
-    let hideTimer: NodeJS.Timeout;
+    let showTimer: number;
+    let hideTimer: number;
 
     if (!isEnabled && isSupported) {
       // Show hint after 1 second
