@@ -39,10 +39,10 @@ export function ChatInput({
   };
 
   return (
-    <div className="p-4 bg-zinc-50 dark:bg-zinc-900">
+    <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">
       <div className="max-w-3xl mx-auto">
         {/* Input container */}
-        <div className="flex items-center gap-3 bg-white dark:bg-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-700 px-3 py-2 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all duration-150">
+        <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-2 focus-within:border-neutral-400 dark:focus-within:border-neutral-600 transition-colors duration-150 shadow-sm">
           {/* Voice button */}
           <VoiceButton
             isListening={isListening}
@@ -64,8 +64,8 @@ export function ChatInput({
             className="
               flex-1 resize-none py-2
               bg-transparent
-              text-zinc-900 dark:text-zinc-100
-              placeholder-zinc-400 dark:placeholder-zinc-500
+              text-neutral-900 dark:text-neutral-100
+              placeholder-neutral-400 dark:placeholder-neutral-600
               text-sm leading-5
               outline-none
               disabled:opacity-50 disabled:cursor-not-allowed
@@ -78,9 +78,10 @@ export function ChatInput({
             onClick={handleSubmit}
             disabled={disabled || !input.trim()}
             className="
-              p-2.5 rounded-xl
-              bg-indigo-600 hover:bg-indigo-700
-              text-white
+              p-2 rounded-md
+              bg-neutral-900 hover:bg-neutral-800
+              dark:bg-neutral-100 dark:hover:bg-neutral-200
+              text-white dark:text-neutral-900
               disabled:opacity-30 disabled:cursor-not-allowed
               transition-colors duration-150
               flex-shrink-0
@@ -89,7 +90,7 @@ export function ChatInput({
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
+              className="h-4 w-4"
               viewBox="0 0 24 24"
               fill="currentColor"
             >

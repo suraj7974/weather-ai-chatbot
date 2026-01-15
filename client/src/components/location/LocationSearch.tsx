@@ -85,33 +85,32 @@ export function LocationSearch() {
     <div className="relative" ref={containerRef}>
       {/* Current location display - show when location exists and not changing */}
       {location && !isChanging ? (
-        <div className="flex items-center justify-between bg-zinc-100 dark:bg-zinc-800 rounded-lg px-3 py-2.5">
+        <div className="flex items-center justify-between bg-neutral-100 dark:bg-neutral-900 rounded-lg px-3 py-2.5 border border-neutral-200 dark:border-neutral-800">
           <div className="flex items-center gap-2.5 min-w-0">
             <svg
-              className="w-4 h-4 text-indigo-500 flex-shrink-0"
+              className="w-4 h-4 text-neutral-500 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              strokeWidth={1.5}
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
               />
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
               />
             </svg>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate">
+              <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
                 {location.name}
               </p>
               {(location.state || location.country) && (
-                <p className="text-xs text-zinc-500 truncate">
+                <p className="text-xs text-neutral-500 truncate">
                   {location.state && `${location.state}, `}
                   {location.country}
                 </p>
@@ -123,12 +122,12 @@ export function LocationSearch() {
             className="
               px-2.5 py-1 rounded-md flex-shrink-0
               text-xs font-medium
-              text-indigo-600 dark:text-indigo-400
-              hover:bg-indigo-50 dark:hover:bg-indigo-950/50
+              text-neutral-600 dark:text-neutral-400
+              hover:bg-neutral-200 dark:hover:bg-neutral-800
               transition-colors duration-150
             "
           >
-            Change
+            {t('location.change')}
           </button>
         </div>
       ) : (
@@ -144,41 +143,41 @@ export function LocationSearch() {
             className="
               w-full px-3 py-2.5 pl-9 text-sm
               rounded-lg
-              bg-zinc-100 dark:bg-zinc-800
-              border border-transparent
-              focus:border-indigo-500 focus:bg-white dark:focus:bg-zinc-900
-              text-zinc-900 dark:text-zinc-100
-              placeholder-zinc-500
+              bg-neutral-100 dark:bg-neutral-900
+              border border-neutral-200 dark:border-neutral-800
+              focus:border-neutral-400 dark:focus:border-neutral-600
+              focus:bg-white dark:focus:bg-neutral-950
+              text-neutral-900 dark:text-neutral-100
+              placeholder-neutral-500
               outline-none
-              focus:ring-2 focus:ring-indigo-500/20
               transition-all duration-150
             "
           />
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            strokeWidth={1.5}
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
             />
           </svg>
           {isSearching ? (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-neutral-900 dark:border-neutral-100 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : isChanging ? (
             <button
               onClick={handleCancelChange}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-              title="Cancel"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+              title={t('location.cancel')}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           ) : null}
@@ -187,7 +186,7 @@ export function LocationSearch() {
 
       {/* Search results dropdown */}
       {showResults && results.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-lg overflow-hidden animate-fadeIn">
+        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-neutral-950 rounded-lg border border-neutral-200 dark:border-neutral-800 shadow-lg overflow-hidden animate-fadeIn">
           <div className="max-h-60 overflow-y-auto custom-scrollbar">
             {results.map((loc, index) => (
               <button
@@ -196,29 +195,34 @@ export function LocationSearch() {
                 className="
                   w-full px-3 py-2.5 text-left
                   flex items-center gap-2.5
-                  hover:bg-zinc-50 dark:hover:bg-zinc-800
+                  hover:bg-neutral-50 dark:hover:bg-neutral-900
                   transition-colors duration-150
-                  border-b border-zinc-100 dark:border-zinc-800 last:border-0
+                  border-b border-neutral-100 dark:border-neutral-900 last:border-0
                 "
               >
                 <svg
-                  className="w-4 h-4 text-zinc-400 flex-shrink-0"
+                  className="w-4 h-4 text-neutral-400 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  strokeWidth={1.5}
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
                   />
                 </svg>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate">
+                  <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
                     {loc.name}
                   </p>
-                  <p className="text-xs text-zinc-500 truncate">
+                  <p className="text-xs text-neutral-500 truncate">
                     {loc.state && `${loc.state}, `}
                     {loc.country}
                   </p>

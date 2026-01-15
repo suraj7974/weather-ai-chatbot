@@ -7,7 +7,7 @@ export function Header() {
   const { toggleSidebar } = useSession();
 
   return (
-    <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-4 py-3">
+    <header className="bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800 px-4 py-3.5">
       <div className="flex items-center justify-between">
         {/* Left section */}
         <div className="flex items-center gap-3">
@@ -16,50 +16,50 @@ export function Header() {
             onClick={toggleSidebar}
             className="
               lg:hidden
-              p-2 rounded-lg
-              hover:bg-zinc-100 dark:hover:bg-zinc-800
-              text-zinc-600 dark:text-zinc-400
+              p-2 rounded-md
+              hover:bg-neutral-100 dark:hover:bg-neutral-900
+              text-neutral-600 dark:text-neutral-400
               transition-colors duration-150
             "
-            title="Toggle sidebar"
+            title={t('sidebar.toggle')}
           >
             <svg
               className="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              strokeWidth={1.5}
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
                 d="M4 6h16M4 12h16M4 18h16"
               />
             </svg>
           </button>
 
           {/* Logo and title */}
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-indigo-600">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-md bg-neutral-900 dark:bg-neutral-100">
               <svg
-                className="w-5 h-5 text-white"
+                className="w-5 h-5 text-white dark:text-neutral-900"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                strokeWidth={2}
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
                 />
               </svg>
             </div>
             <div>
-              <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+              <h1 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 tracking-tight">
                 {t('app.title')}
               </h1>
-              <p className="text-xs text-zinc-500 hidden sm:block">
+              <p className="text-xs text-neutral-500 dark:text-neutral-500 hidden sm:block">
                 {t('app.subtitle')}
               </p>
             </div>
@@ -75,29 +75,27 @@ export function Header() {
           <button
             onClick={toggleTheme}
             className="
-              p-2 rounded-lg
-              hover:bg-zinc-100 dark:hover:bg-zinc-800
-              text-zinc-600 dark:text-zinc-400
+              p-2 rounded-md
+              hover:bg-neutral-100 dark:hover:bg-neutral-900
+              text-neutral-600 dark:text-neutral-400
               transition-colors duration-150
             "
             title={theme === 'light' ? t('theme.dark') : t('theme.light')}
           >
             {theme === 'light' ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
                 />
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
                 />
               </svg>
             )}

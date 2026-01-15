@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { useSession } from '../../context';
-import { useLanguage } from '../../context/LanguageContext';
+import { useSession, useLanguage } from '../../context';
 import { formatDistanceToNow } from '../../utils/date';
 
 export function Sidebar() {
@@ -34,7 +33,7 @@ export function Sidebar() {
       {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -44,8 +43,8 @@ export function Sidebar() {
         className={`
           fixed lg:relative z-50 h-full
           flex flex-col
-          bg-zinc-50 dark:bg-zinc-900
-          border-r border-zinc-200 dark:border-zinc-800
+          bg-neutral-50 dark:bg-neutral-950
+          border-r border-neutral-200 dark:border-neutral-800
           transition-all duration-300 ease-out
           ${isSidebarOpen ? 'w-64' : 'w-0 lg:w-16'}
           ${!isSidebarOpen && 'max-lg:-translate-x-full'}
@@ -54,15 +53,18 @@ export function Sidebar() {
         {/* Full Sidebar Content */}
         <div className={`w-64 h-full flex-col ${isSidebarOpen ? 'flex' : 'hidden'}`}>
           {/* Header */}
-          <div className="p-3 border-b border-zinc-200 dark:border-zinc-800">
+          <div className="p-3 border-b border-neutral-200 dark:border-neutral-800">
             <button
               onClick={() => createSession()}
               className="
                 w-full flex items-center justify-center gap-2
                 px-4 py-2.5 rounded-lg
-                bg-indigo-600 hover:bg-indigo-700
-                text-white text-sm font-medium
-                transition-colors duration-200
+                bg-neutral-900 hover:bg-neutral-800
+                dark:bg-neutral-100 dark:hover:bg-neutral-200
+                text-white dark:text-neutral-900
+                text-sm font-medium
+                transition-colors duration-150
+                shadow-sm
               "
             >
               <svg
@@ -101,9 +103,9 @@ export function Sidebar() {
           </div>
 
           {/* Footer */}
-          <div className="p-3 border-t border-zinc-200 dark:border-zinc-800">
-            <p className="text-xs text-zinc-500 text-center">
-              {sessions.length} {sessions.length === 1 ? 'chat' : 'chats'}
+          <div className="p-3 border-t border-neutral-200 dark:border-neutral-800">
+            <p className="text-xs text-neutral-500 text-center">
+              {sessions.length} {sessions.length === 1 ? t('chat.count.singular') : t('chat.count.plural')}
             </p>
           </div>
 
@@ -114,19 +116,19 @@ export function Sidebar() {
               hidden lg:flex
               absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2
               items-center justify-center
-              w-7 h-7 rounded-full
-              bg-white dark:bg-zinc-800
-              border border-zinc-200 dark:border-zinc-700
-              text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300
-              hover:bg-zinc-50 dark:hover:bg-zinc-700
-              shadow-md
-              transition-all duration-200
+              w-6 h-6 rounded-full
+              bg-white dark:bg-neutral-900
+              border border-neutral-200 dark:border-neutral-700
+              text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300
+              hover:bg-neutral-50 dark:hover:bg-neutral-800
+              shadow-sm
+              transition-all duration-150
               z-10
             "
-            title="Collapse sidebar"
+            title={t('sidebar.collapse')}
           >
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         </div>
@@ -140,9 +142,11 @@ export function Sidebar() {
               className="
                 w-full aspect-square flex items-center justify-center
                 rounded-lg
-                bg-indigo-600 hover:bg-indigo-700
-                text-white
-                transition-colors duration-200
+                bg-neutral-900 hover:bg-neutral-800
+                dark:bg-neutral-100 dark:hover:bg-neutral-200
+                text-white dark:text-neutral-900
+                transition-colors duration-150
+                shadow-sm
               "
               title={t('chat.newChat')}
             >
@@ -165,19 +169,19 @@ export function Sidebar() {
             className="
               absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2
               flex items-center justify-center
-              w-7 h-7 rounded-full
-              bg-white dark:bg-zinc-800
-              border border-zinc-200 dark:border-zinc-700
-              text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300
-              hover:bg-zinc-50 dark:hover:bg-zinc-700
-              shadow-md
-              transition-all duration-200
+              w-6 h-6 rounded-full
+              bg-white dark:bg-neutral-900
+              border border-neutral-200 dark:border-neutral-700
+              text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300
+              hover:bg-neutral-50 dark:hover:bg-neutral-800
+              shadow-sm
+              transition-all duration-150
               z-10
             "
-            title="Expand sidebar"
+            title={t('sidebar.expand')}
           >
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
@@ -200,6 +204,8 @@ interface SessionItemProps {
 }
 
 function SessionItem({ session, isActive, onClick, onDelete }: SessionItemProps) {
+  const { t } = useLanguage();
+  
   return (
     <button
       onClick={onClick}
@@ -207,15 +213,15 @@ function SessionItem({ session, isActive, onClick, onDelete }: SessionItemProps)
         group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
         text-left transition-colors duration-150
         ${isActive
-          ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300'
-          : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
+          ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100'
+          : 'hover:bg-neutral-100 dark:hover:bg-neutral-900 text-neutral-700 dark:text-neutral-300'
         }
       `}
     >
       {/* Chat icon */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className={`h-4 w-4 flex-shrink-0 ${isActive ? 'text-indigo-500' : 'text-zinc-400'}`}
+        className={`h-4 w-4 flex-shrink-0 ${isActive ? 'text-neutral-700 dark:text-neutral-300' : 'text-neutral-400'}`}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -231,7 +237,7 @@ function SessionItem({ session, isActive, onClick, onDelete }: SessionItemProps)
       {/* Content */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate">{session.title}</p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-500">
+        <p className="text-xs text-neutral-500">
           {formatDistanceToNow(session.updatedAt)}
         </p>
       </div>
@@ -242,11 +248,11 @@ function SessionItem({ session, isActive, onClick, onDelete }: SessionItemProps)
         className="
           opacity-0 group-hover:opacity-100
           p-1 rounded
-          hover:bg-rose-100 dark:hover:bg-rose-900/30
-          text-zinc-400 hover:text-rose-500
+          hover:bg-red-50 dark:hover:bg-red-900/20
+          text-neutral-400 hover:text-red-600 dark:hover:text-red-400
           transition-all duration-150
         "
-        title="Delete chat"
+        title={t('chat.deleteSession')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

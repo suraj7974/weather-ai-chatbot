@@ -26,7 +26,7 @@ export function CurrentLocationButton() {
             setLocation(locationData);
           } else {
             setLocation({
-              name: 'Current Location',
+              name: t('location.currentLocation'),
               country: '',
               lat: latitude,
               lon: longitude,
@@ -35,7 +35,7 @@ export function CurrentLocationButton() {
         } catch (err) {
           console.error('Reverse geocode error:', err);
           setLocation({
-            name: 'Current Location',
+            name: t('location.currentLocation'),
             country: '',
             lat: latitude,
             lon: longitude,
@@ -66,33 +66,31 @@ export function CurrentLocationButton() {
           w-full flex items-center justify-center gap-2
           px-3 py-2 rounded-lg
           text-sm font-medium
-          text-indigo-600 dark:text-indigo-400
-          bg-indigo-50 dark:bg-indigo-950/50
-          hover:bg-indigo-100 dark:hover:bg-indigo-950
-          border border-indigo-200 dark:border-indigo-900
+          text-neutral-600 dark:text-neutral-400
+          bg-neutral-100 dark:bg-neutral-900
+          hover:bg-neutral-200 dark:hover:bg-neutral-800
+          border border-neutral-200 dark:border-neutral-800
           transition-colors duration-150
           disabled:opacity-50 disabled:cursor-not-allowed
         "
       >
         {isDetecting ? (
           <>
-            <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-neutral-500 border-t-transparent rounded-full animate-spin" />
             <span>{t('location.detecting')}</span>
           </>
         ) : (
           <>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3z"
+                d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
               />
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364-5.364l-1.414 1.414M8.05 15.95l-1.414 1.414m0-10.728l1.414 1.414m7.314 7.314l1.414 1.414"
+                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
               />
             </svg>
             <span>{t('location.current')}</span>
@@ -100,7 +98,7 @@ export function CurrentLocationButton() {
         )}
       </button>
       {error && (
-        <p className="text-xs text-rose-500 mt-2 text-center">{error}</p>
+        <p className="text-xs text-red-500 dark:text-red-400 mt-2 text-center">{error}</p>
       )}
     </div>
   );

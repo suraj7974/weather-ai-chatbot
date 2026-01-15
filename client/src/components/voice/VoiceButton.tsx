@@ -15,9 +15,9 @@ export function VoiceButton({ isListening, isSupported, onClick, disabled = fals
       <button
         disabled
         className="
-          p-2.5 rounded-xl
-          bg-zinc-100 dark:bg-zinc-800
-          text-zinc-400 cursor-not-allowed
+          p-2 rounded-lg
+          bg-neutral-100 dark:bg-neutral-900
+          text-neutral-400 cursor-not-allowed
         "
         title={t('voice.notSupported')}
       >
@@ -31,11 +31,11 @@ export function VoiceButton({ isListening, isSupported, onClick, disabled = fals
       onClick={onClick}
       disabled={disabled}
       className={`
-        relative p-2.5 rounded-xl
+        relative p-2 rounded-lg
         transition-all duration-150
         ${isListening 
-          ? 'bg-rose-500 text-white' 
-          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+          ? 'bg-red-500 text-white' 
+          : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800'
         }
         disabled:opacity-50 disabled:cursor-not-allowed
       `}
@@ -43,7 +43,7 @@ export function VoiceButton({ isListening, isSupported, onClick, disabled = fals
     >
       {/* Pulse animation when listening */}
       {isListening && (
-        <span className="absolute inset-0 rounded-xl bg-rose-400 animate-ping opacity-40" />
+        <span className="absolute inset-0 rounded-lg bg-red-400 animate-ping opacity-40" />
       )}
       
       <span className="relative">
