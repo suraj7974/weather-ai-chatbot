@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import type { Language } from '../types';
+import { useState, useCallback, useEffect, useRef } from "react";
+import type { Language } from "../types";
 
 export interface UseTextToSpeechOptions {
   language: Language;
@@ -12,17 +12,20 @@ export interface UseTextToSpeechReturn {
   isSupported: boolean;
 }
 
-export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeechReturn {
+export function useTextToSpeech(
+  options: UseTextToSpeechOptions,
+): UseTextToSpeechReturn {
   const { language } = options;
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voicesLoaded, setVoicesLoaded] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const isSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  const isSupported =
+    typeof window !== "undefined" && "speechSynthesis" in window;
 
   // Get language code for speech
   const getLanguageCode = useCallback((lang: Language): string => {
-    return lang === 'ja' ? 'ja-JP' : 'en-US';
+    return lang === "ja" ? "ja-JP" : "en-US";
   }, []);
 
   // Load voices (some browsers load them async)
@@ -45,50 +48,63 @@ export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeec
   }, [isSupported]);
 
   // Find best voice for language
-  const getBestVoice = useCallback((lang: Language): SpeechSynthesisVoice | null => {
-    if (!isSupported) return null;
-    
-    const voices = speechSynthesis.getVoices();
-    
-    // Try to find a voice that matches the language
-    const matchingVoices = voices.filter(voice => voice.lang.startsWith(lang === 'ja' ? 'ja' : 'en'));
-    
-    // Priority 1: Female voices with "Natural", "Premium", or "Enhanced"
-    let preferredVoice = matchingVoices.find(v => 
-      (v.name.toLowerCase().includes('female') || 
-       v.name.toLowerCase().includes('woman') || 
-       v.name.includes('Google US English') ||
-       v.name.includes('Google 日本語') || // Google Chrome/Android (Female)
-       v.name.includes('Kyoko') ||         // macOS/iOS (Female)
-       v.name.includes('Haruka') ||        // Windows (Female)
-       v.name.includes('Ayumi')) &&        // Windows (Female)
-      (v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('premium') || v.name.toLowerCase().includes('enhanced'))
-    );
+  const getBestVoice = useCallback(
+    (lang: Language): SpeechSynthesisVoice | null => {
+      if (!isSupported) return null;
 
-    // Priority 2: Any Female voice
-    if (!preferredVoice) {
-      preferredVoice = matchingVoices.find(v => 
-        v.name.toLowerCase().includes('female') || 
-        v.name.toLowerCase().includes('woman') ||
-        v.name.includes('Google US English') ||
-        v.name.includes('Google 日本語') ||
-        v.name.includes('Kyoko') ||
-        v.name.includes('Haruka') ||
-        v.name.includes('Ayumi')
+      const voices = speechSynthesis.getVoices();
+
+      // Try to find a voice that matches the language
+      const matchingVoices = voices.filter((voice) =>
+        voice.lang.startsWith(lang === "ja" ? "ja" : "en"),
       );
-    }
-    
-    // Priority 3: Any high quality voice
-    if (!preferredVoice) {
-      preferredVoice = matchingVoices.find(v => 
-        v.name.toLowerCase().includes('natural') || 
-        v.name.toLowerCase().includes('premium') ||
-        v.name.toLowerCase().includes('enhanced')
+
+      // Priority 1: Female voices with "Natural", "Premium", or "Enhanced"
+      const isFemale = (name: string) => {
+        const n = name.toLowerCase();
+        return (
+          n.includes("female") ||
+          n.includes("woman") ||
+          n.includes("google us english") ||
+          n.includes("google 日本語") ||
+          n.includes("zira") || // Windows (En)
+          n.includes("samantha") || // macOS (En)
+          n.includes("eva") || // Windows (En)
+          n.includes("kyoko") || // macOS (Ja)
+          n.includes("haruka") || // Windows (Ja)
+          n.includes("ayumi") || // Windows (Ja)
+          n.includes("sayaka") || // Windows (Ja)
+          n.includes("nanami")
+        ); // Azure/Windows (Ja)
+      };
+
+      let preferredVoice = matchingVoices.find(
+        (v) =>
+          isFemale(v.name) &&
+          (v.name.toLowerCase().includes("natural") ||
+            v.name.toLowerCase().includes("premium") ||
+            v.name.toLowerCase().includes("enhanced")),
       );
-    }
-    
-    return preferredVoice || matchingVoices[0] || null;
-  }, [isSupported, voicesLoaded]);
+
+      // Priority 2: Any Female voice
+      if (!preferredVoice) {
+        preferredVoice = matchingVoices.find((v) => isFemale(v.name));
+      }
+
+      // Priority 3: Any high quality voice
+      if (!preferredVoice) {
+        preferredVoice = matchingVoices.find(
+          (v) =>
+            v.name.toLowerCase().includes("natural") ||
+            v.name.toLowerCase().includes("premium") ||
+            v.name.toLowerCase().includes("enhanced"),
+        );
+      }
+
+      return preferredVoice || matchingVoices[0] || null;
+    },
+    [isSupported, voicesLoaded],
+  );
 
   // Stop any ongoing speech
   const stop = useCallback(() => {
@@ -98,38 +114,41 @@ export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeec
   }, [isSupported]);
 
   // Speak text
-  const speak = useCallback((text: string) => {
-    if (!isSupported || !text.trim()) return;
+  const speak = useCallback(
+    (text: string) => {
+      if (!isSupported || !text.trim()) return;
 
-    // Stop previous speech only if currently speaking
-    // This prevents unnecessary interruptions if the engine is idle
-    // but safer to cancel if we are starting a NEW utterance
-    speechSynthesis.cancel(); 
-    setIsSpeaking(false);
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = getLanguageCode(language);
-    
-    const voice = getBestVoice(language);
-    if (voice) {
-      utterance.voice = voice;
-    }
-
-    // Adjust speech rate and pitch for better quality
-    utterance.rate = language === 'ja' ? 0.9 : 1.0;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = (e) => {
-      console.error('Speech synthesis error:', e);
+      // Stop previous speech only if currently speaking
+      // This prevents unnecessary interruptions if the engine is idle
+      // but safer to cancel if we are starting a NEW utterance
+      speechSynthesis.cancel();
       setIsSpeaking(false);
-    };
 
-    utteranceRef.current = utterance;
-    speechSynthesis.speak(utterance);
-  }, [isSupported, language, getLanguageCode, getBestVoice]);
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = getLanguageCode(language);
+
+      const voice = getBestVoice(language);
+      if (voice) {
+        utterance.voice = voice;
+      }
+
+      // Adjust speech rate and pitch for better quality
+      utterance.rate = language === "ja" ? 0.9 : 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = (e) => {
+        console.error("Speech synthesis error:", e);
+        setIsSpeaking(false);
+      };
+
+      utteranceRef.current = utterance;
+      speechSynthesis.speak(utterance);
+    },
+    [isSupported, language, getLanguageCode, getBestVoice],
+  );
 
   // Cleanup on unmount
   useEffect(() => {
