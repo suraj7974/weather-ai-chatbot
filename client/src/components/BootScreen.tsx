@@ -21,11 +21,11 @@ export function BootScreen({ onComplete }: BootScreenProps) {
           return prev + 1;
         } else {
           clearInterval(interval);
-          setTimeout(() => setPhase('pause'), 50);
+          setTimeout(() => setPhase('pause'), 100);
           return prev;
         }
       });
-    }, 220);
+    }, 400); // Increased from 220
 
     return () => clearInterval(interval);
   }, [phase]);
@@ -34,7 +34,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
     if (phase === 'pause') {
       const timer = setTimeout(() => {
         setPhase('icons');
-      }, 300);
+      }, 600); // Increased from 300
       return () => clearTimeout(timer);
     }
   }, [phase]);
@@ -43,7 +43,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
     if (phase === 'icons') {
       const timer = setTimeout(() => {
         setPhase('exit');
-      }, 350);
+      }, 700); // Increased from 350
       return () => clearTimeout(timer);
     }
   }, [phase]);
@@ -62,7 +62,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
           className="fixed inset-0 z-[9999] bg-neutral-950 flex items-center justify-center"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.12 }}
+          transition={{ duration: 0.2 }} // Increased from 0.12
         >
           {phase === 'greetings' && (
             <AnimatePresence mode="wait">
@@ -72,7 +72,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.1 }}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
+                transition={{ duration: 0.25, ease: 'easeOut' }} // Increased from 0.15
                 style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.3)' }}
               >
                 {greetings[currentIndex]}
@@ -87,7 +87,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
                 className="w-12 h-12 md:w-16 md:h-16 text-white"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.12, delay: 0 }}
+                transition={{ duration: 0.2, delay: 0 }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -104,7 +104,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
                 className="w-12 h-12 md:w-16 md:h-16 text-white"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.12, delay: 0.05 }}
+                transition={{ duration: 0.2, delay: 0.1 }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -131,7 +131,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
                 className="w-12 h-12 md:w-16 md:h-16 text-white"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.12, delay: 0.1 }}
+                transition={{ duration: 0.2, delay: 0.2 }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
