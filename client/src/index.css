@@ -271,3 +271,43 @@ html {
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #404040;
 }
+
+/* Boot screen animations */
+@keyframes greetingFade {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes iconFade {
+    0% {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-greetingFade {
+    animation: greetingFade 0.18s ease-in-out forwards;
+}
+
+.animate-iconFade {
+    animation: iconFade 0.15s ease-out forwards;
+    opacity: 0;
+}

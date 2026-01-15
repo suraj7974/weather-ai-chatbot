@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Header,
   ChatContainer,
@@ -8,6 +8,7 @@ import {
   CurrentLocationButton,
   Sidebar,
 } from "./components";
+import { BootScreen } from "./components/BootScreen";
 import { useChat, useSession, useLanguage } from "./context";
 import { locationApi } from "./services/api";
 
@@ -15,6 +16,7 @@ function App() {
   const { weather, location, setLocation } = useChat();
   const { activeSession, createSession } = useSession();
   const { t } = useLanguage();
+  const [showBootScreen, setShowBootScreen] = useState(true);
 
   // Auto-detect location on first load (only if there's an active session)
   useEffect(() => {
@@ -120,7 +122,11 @@ function App() {
   );
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-neutral-950">
+    <>
+      {showBootScreen && (
+        <BootScreen onComplete={() => setShowBootScreen(false)} />
+      )}
+      <div className="h-screen flex flex-col bg-white dark:bg-neutral-950">
       <Header />
 
       <div className="flex-1 flex overflow-hidden">
@@ -201,6 +207,7 @@ function App() {
         </div>
       )}
     </div>
+    </>
   );
 }
 
