@@ -15,6 +15,7 @@ export interface UseTextToSpeechReturn {
 export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeechReturn {
   const { language } = options;
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const isSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
@@ -23,6 +24,25 @@ export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeec
   const getLanguageCode = useCallback((lang: Language): string => {
     return lang === 'ja' ? 'ja-JP' : 'en-US';
   }, []);
+
+  // Load voices (some browsers load them async)
+  useEffect(() => {
+    if (!isSupported) return;
+
+    const loadVoices = () => {
+      const voices = speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        setVoicesLoaded(true);
+      }
+    };
+
+    loadVoices();
+    speechSynthesis.onvoiceschanged = loadVoices;
+
+    return () => {
+      speechSynthesis.onvoiceschanged = null;
+    };
+  }, [isSupported]);
 
   // Find best voice for language
   const getBestVoice = useCallback((lang: Language): SpeechSynthesisVoice | null => {
@@ -41,7 +61,7 @@ export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeec
     );
     
     return preferredVoice || matchingVoices[0] || null;
-  }, [isSupported]);
+  }, [isSupported, voicesLoaded]);
 
   // Stop any ongoing speech
   const stop = useCallback(() => {
@@ -54,8 +74,11 @@ export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeec
   const speak = useCallback((text: string) => {
     if (!isSupported || !text.trim()) return;
 
-    // Stop any ongoing speech first
-    stop();
+    // Stop previous speech only if currently speaking
+    // This prevents unnecessary interruptions if the engine is idle
+    // but safer to cancel if we are starting a NEW utterance
+    speechSynthesis.cancel(); 
+    setIsSpeaking(false);
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = getLanguageCode(language);
@@ -72,27 +95,14 @@ export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeec
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onerror = (e) => {
+      console.error('Speech synthesis error:', e);
+      setIsSpeaking(false);
+    };
 
     utteranceRef.current = utterance;
     speechSynthesis.speak(utterance);
-  }, [isSupported, language, getLanguageCode, getBestVoice, stop]);
-
-  // Load voices (some browsers load them async)
-  useEffect(() => {
-    if (!isSupported) return;
-
-    const loadVoices = () => {
-      speechSynthesis.getVoices();
-    };
-
-    loadVoices();
-    speechSynthesis.onvoiceschanged = loadVoices;
-
-    return () => {
-      speechSynthesis.onvoiceschanged = null;
-    };
-  }, [isSupported]);
+  }, [isSupported, language, getLanguageCode, getBestVoice]);
 
   // Cleanup on unmount
   useEffect(() => {

@@ -43,6 +43,7 @@ declare global {
 
 export interface VoiceRecognitionState {
   isListening: boolean;
+  isStarting: boolean;
   isSupported: boolean;
   transcript: string;
   interimTranscript: string;
@@ -87,12 +88,14 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
   const { language } = options;
   
   const [isListening, setIsListening] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const finalTranscriptRef = useRef('');
+  const ignoreNextEndRef = useRef(false);
 
   const { supported: isSupported, browser: browserName } = checkCompatibility();
 
@@ -116,6 +119,8 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
 
     recognition.onstart = () => {
       setIsListening(true);
+      setIsStarting(false);
+      ignoreNextEndRef.current = false;
       setError(null);
       finalTranscriptRef.current = '';
     };
@@ -150,16 +155,26 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
       console.error('Speech recognition error:', event.error);
       
       if (event.error === 'no-speech' || event.error === 'aborted') {
-        setIsListening(false);
+        if (!ignoreNextEndRef.current) {
+          setIsListening(false);
+          setIsStarting(false);
+        }
         return;
       }
       
       setError(getErrorMessage(event.error));
       setIsListening(false);
+      setIsStarting(false);
     };
 
     recognition.onend = () => {
+      if (ignoreNextEndRef.current) {
+        ignoreNextEndRef.current = false;
+        return;
+      }
+
       setIsListening(false);
+      setIsStarting(false);
       // Move any remaining interim to final transcript
       setInterimTranscript(current => {
         if (current) {
@@ -192,23 +207,40 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
   }, [language, getLanguageCode, isListening]);
 
   const startListening = useCallback(() => {
-    if (!recognitionRef.current || isListening) return;
+    if (!recognitionRef.current) return;
     
-    // Reset all state
+    setIsStarting(true);
+    
+    // If already listening, we want to abort and ignore the end event
+    // so it doesn't try to save partial results
+    if (isListening) {
+      ignoreNextEndRef.current = true;
+      recognitionRef.current.abort();
+    }
+    
+    // Reset all state immediately
     setTranscript('');
     setInterimTranscript('');
     setError(null);
     finalTranscriptRef.current = '';
     
-    try {
-      recognitionRef.current.start();
-    } catch (err) {
-      if (err instanceof Error && err.message.includes('already started')) {
-        return;
+    // Add a small delay to ensure previous session is fully cleaned up
+    setTimeout(() => {
+      try {
+        if (recognitionRef.current) {
+           recognitionRef.current.start();
+        }
+      } catch (err) {
+        if (err instanceof Error && err.message.includes('already started')) {
+          setIsListening(true);
+          setIsStarting(false);
+          return;
+        }
+        console.error('Failed to start recognition:', err);
+        setError('Failed to start voice recognition');
+        setIsStarting(false);
       }
-      console.error('Failed to start recognition:', err);
-      setError('Failed to start voice recognition');
-    }
+    }, 100);
   }, [isListening]);
 
   const stopListening = useCallback(() => {
@@ -230,6 +262,7 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions): UseVoi
 
   return {
     isListening,
+    isStarting,
     isSupported,
     transcript,
     interimTranscript,

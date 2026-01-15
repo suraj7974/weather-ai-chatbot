@@ -13,6 +13,7 @@ export function ChatContainer() {
   // Voice recognition (input)
   const {
     isListening,
+    isStarting,
     isSupported,
     transcript,
     interimTranscript,
@@ -33,8 +34,9 @@ export function ChatContainer() {
   useEffect(() => {
     if (!voiceOutputEnabled || !ttsSupported) return;
     
-    // Check if we have a new message
-    if (messages.length > lastMessageCountRef.current) {
+    // Only speak when loading is finished (message is complete)
+    // This prevents speaking partial messages during streaming
+    if (!isLoading && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
       
       // Only speak assistant messages that we haven't spoken yet
@@ -45,7 +47,7 @@ export function ChatContainer() {
     }
     
     lastMessageCountRef.current = messages.length;
-  }, [messages, voiceOutputEnabled, ttsSupported, speak]);
+  }, [isLoading, messages, voiceOutputEnabled, ttsSupported, speak]);
 
   // Toggle voice output
   const handleVoiceOutputToggle = () => {
@@ -60,7 +62,7 @@ export function ChatContainer() {
   };
 
   const handleVoiceClick = () => {
-    if (isListening) {
+    if (isListening || isStarting) {
       // Stop button now closes the panel (same as cancel)
       stopListening();
       resetTranscript();
@@ -88,12 +90,11 @@ export function ChatContainer() {
   };
 
   const handleVoiceRetry = () => {
-    resetTranscript();
     startListening();
   };
 
   const showRecordingIndicator =
-    isListening || transcript || interimTranscript || error;
+    isListening || isStarting || transcript || interimTranscript || error;
 
   return (
     <div className="flex flex-col h-full">
