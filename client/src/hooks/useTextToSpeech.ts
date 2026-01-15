@@ -53,12 +53,39 @@ export function useTextToSpeech(options: UseTextToSpeechOptions): UseTextToSpeec
     // Try to find a voice that matches the language
     const matchingVoices = voices.filter(voice => voice.lang.startsWith(lang === 'ja' ? 'ja' : 'en'));
     
-    // Prefer natural/premium voices
-    const preferredVoice = matchingVoices.find(v => 
-      v.name.toLowerCase().includes('natural') || 
-      v.name.toLowerCase().includes('premium') ||
-      v.name.toLowerCase().includes('enhanced')
+    // Priority 1: Female voices with "Natural", "Premium", or "Enhanced"
+    let preferredVoice = matchingVoices.find(v => 
+      (v.name.toLowerCase().includes('female') || 
+       v.name.toLowerCase().includes('woman') || 
+       v.name.includes('Google US English') ||
+       v.name.includes('Google 日本語') || // Google Chrome/Android (Female)
+       v.name.includes('Kyoko') ||         // macOS/iOS (Female)
+       v.name.includes('Haruka') ||        // Windows (Female)
+       v.name.includes('Ayumi')) &&        // Windows (Female)
+      (v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('premium') || v.name.toLowerCase().includes('enhanced'))
     );
+
+    // Priority 2: Any Female voice
+    if (!preferredVoice) {
+      preferredVoice = matchingVoices.find(v => 
+        v.name.toLowerCase().includes('female') || 
+        v.name.toLowerCase().includes('woman') ||
+        v.name.includes('Google US English') ||
+        v.name.includes('Google 日本語') ||
+        v.name.includes('Kyoko') ||
+        v.name.includes('Haruka') ||
+        v.name.includes('Ayumi')
+      );
+    }
+    
+    // Priority 3: Any high quality voice
+    if (!preferredVoice) {
+      preferredVoice = matchingVoices.find(v => 
+        v.name.toLowerCase().includes('natural') || 
+        v.name.toLowerCase().includes('premium') ||
+        v.name.toLowerCase().includes('enhanced')
+      );
+    }
     
     return preferredVoice || matchingVoices[0] || null;
   }, [isSupported, voicesLoaded]);
